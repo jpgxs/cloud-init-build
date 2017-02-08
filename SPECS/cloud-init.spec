@@ -16,6 +16,7 @@ Source3:        cloud-init-tmpfiles.conf
 
 Patch0001: 0001-fix-rsyslog-programname-match.patch
 Patch0002: 0002-change-requirements.patch
+Patch0003: 0003-set-hostname.patch
 
 Obsoletes:      cloud-init < 0.7.9-0
 
@@ -61,6 +62,7 @@ ssh keys and to let the user run various scripts.
 
 %patch0001 -p1
 %patch0002 -p1
+%patch0003 -p1
 
 cp -p %{SOURCE2} README.rhel
 
