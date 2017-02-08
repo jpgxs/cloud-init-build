@@ -22,7 +22,6 @@ Source3:        cloud-init-tmpfiles.conf
 # repository.
 # patches_base=0.7.5
 Patch0001: 0001-fix-rsyslog-programname-match.patch
-Patch0002: 0002-Stopped-calling-udevadm-settle-with-quiet-since-syst.patch
 
 # Deal with noarch -> arch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1067089
@@ -67,7 +66,6 @@ ssh keys and to let the user run various scripts.
 %setup -q -n %{name}-%{version}
 
 %patch0001 -p1
-%patch0002 -p1
 
 cp -p %{SOURCE2} README.rhel
 
