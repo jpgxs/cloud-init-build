@@ -15,7 +15,7 @@ Source2:        cloud-init-README.rhel
 Source3:        cloud-init-tmpfiles.conf
 
 Patch0001: 0001-fix-rsyslog-programname-match.patch
-Patch0002: 0002-fix-argparse-requirement.patch
+Patch0002: 0002-change-requirements.patch
 
 Obsoletes:      cloud-init < 0.7.9-0
 
@@ -37,6 +37,7 @@ Requires:       procps
 Requires:       python-boto
 Requires:       python-cheetah
 Requires:       python-configobj
+Requires:       python-jinja2
 Requires:       python-jsonpatch
 Requires:       python-prettytable
 Requires:       python-requests
@@ -131,7 +132,6 @@ fi
 /etc/dhcp/dhclient-exit-hooks.d/hook-dhclient
 /lib/udev/rules.d/66-azure-ephemeral.rules
 /usr/lib/systemd/system-generators/cloud-init-generator
-/usr/lib/systemd/system/cloud-*
 
 %license LICENSE
 %doc ChangeLog TODO.rst README.rhel
