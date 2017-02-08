@@ -1,0 +1,14 @@
+diff --git a/requirements.txt b/requirements.txt
+index 0c4951f..f4ce9c4 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -27,9 +27,6 @@ configobj>=5.0.2
+ # All new style configurations are in the yaml format
+ pyyaml
+ 
+-# The new main entrypoint uses argparse instead of optparse
+-argparse
+-
+ # Requests handles ssl correctly!
+ requests
+ 
