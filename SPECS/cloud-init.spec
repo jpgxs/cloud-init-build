@@ -1,10 +1,6 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 %{!?license: %global license %%doc}
 
-# The only reason we are archful is because dmidecode is ExclusiveArch
-# https://bugzilla.redhat.com/show_bug.cgi?id=1067089
-%global debug_package %{nil}
-
 Name:           cloud-init
 Version:        0.7.9
 Release:        10%{?dist}.1
@@ -18,24 +14,19 @@ Source1:        cloud-init-centos.cfg
 Source2:        cloud-init-README.rhel
 Source3:        cloud-init-tmpfiles.conf
 
-# Patches managed with rdopkg, using github.com/larsks/cloud-init as integration
-# repository.
-# patches_base=0.7.5
 Patch0001: 0001-fix-rsyslog-programname-match.patch
 
-# Deal with noarch -> arch
-# https://bugzilla.redhat.com/show_bug.cgi?id=1067089
 Obsoletes:      cloud-init < 0.7.9-0
 
+BuildArch:      noarch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
-BuildRequires:  systemd-units
+BuildRequires:  python-cheetah
 
-%ifarch %{?ix86} x86_64 ia64
-Requires:       dmidecode
-%endif
+Requires:       /usr/bin/run-parts
+Requires:       PyYAML
 Requires:       e2fsprogs
 Requires:       iproute
 Requires:       libselinux-python
@@ -45,13 +36,14 @@ Requires:       procps
 Requires:       python-boto
 Requires:       python-cheetah
 Requires:       python-configobj
+Requires:       python-jsonpatch
 Requires:       python-prettytable
 Requires:       python-requests
-Requires:       PyYAML
-Requires:       python-jsonpatch
 Requires:       rsyslog
 Requires:       shadow-utils
-Requires:       /usr/bin/run-parts
+Requires:       sudo >= 1.7.2p2-3
+
+BuildRequires:    systemd-units
 Requires(post):   systemd-units
 Requires(preun):  systemd-units
 Requires(postun): systemd-units
@@ -76,7 +68,10 @@ cp -p %{SOURCE2} README.rhel
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
+%{__python} setup.py install -O1 \
+    --skip-build --root $RPM_BUILD_ROOT \
+    --init-system=systemd
+
 
 # Don't ship the tests
 rm -r $RPM_BUILD_ROOT%{python_sitelib}/tests
@@ -130,14 +125,22 @@ fi
 
 
 %files
+/etc/NetworkManager/dispatcher.d/hook-network-manager
+/etc/dhcp/dhclient-exit-hooks.d/hook-dhclient
+/lib/udev/rules.d/66-azure-ephemeral.rules
+/usr/lib/systemd/system-generators/cloud-init-generator
+/usr/lib/systemd/system/cloud-*
+
 %license LICENSE
-%doc ChangeLog TODO README.rhel
+%doc ChangeLog TODO.rst README.rhel
+
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg
 %dir               %{_sysconfdir}/cloud/cloud.cfg.d
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg.d/*.cfg
 %doc               %{_sysconfdir}/cloud/cloud.cfg.d/README
 %dir               %{_sysconfdir}/cloud/templates
 %config(noreplace) %{_sysconfdir}/cloud/templates/*
+
 %{_unitdir}/cloud-config.service
 %{_unitdir}/cloud-config.target
 %{_unitdir}/cloud-final.service
@@ -152,7 +155,6 @@ fi
 %dir /var/lib/cloud
 
 %config(noreplace) %{_sysconfdir}/rsyslog.d/21-cloudinit.conf
-
 
 %changelog
 * Wed Sep 10 2014 Karanbir Singh <kbsingh@centos.org> 0.7.5-10.el7.centos.1
