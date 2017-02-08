@@ -148,6 +148,8 @@ fi
 %{_unitdir}/cloud-final.service
 %{_unitdir}/cloud-init-local.service
 %{_unitdir}/cloud-init.service
+%{_unitdir}/cloud-init-generator
+%{_unitdir}/cloud-init.target
 %{_tmpfilesdir}/%{name}.conf
 %{python_sitelib}/*
 %{_libexecdir}/%{name}
